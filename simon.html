@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <!-- 
+
+        To be clear: this heavily relies on the work of josex2r (codex2r@gmail.com, https://github.com/josex2r/jQuery-SlotMachine), and is not at all a demonstration of my own coding abilities, but a demonstration of adaptation
+        and use of open resources.
+
+        -->
+
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Beverage Slot Machine for Thumbtack</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2.0">
+        <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon"> 
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link rel="stylesheet" href="//captainsometimes.com/thumbtack/css/style.css" type="text/css" media="screen" />
+
+
+        <link rel="stylesheet" href="//captainsometimes.com/thumbtack/jQuery-SlotMachine/dist/jquery.slotmachine.css" type="text/css" media="screen" />
+
+        <script type="text/javascript" src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="//captainsometimes.com/thumbtack/jQuery-SlotMachine/dist/jquery.slotmachine.js"></script>
+
+    </head>
+
+    <body>
+
+        <!-- I am intentionally leaving this Github badge here because really josex2r did the real work. -->
+        <a href="https://github.com/josex2r/jQuery-SlotMachine"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/652c5b9acfaddf3a9c326fa6bde407b87f7be0f4/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6f72616e67655f6666373630302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_orange_ff7600.png"></a>
+
+        <div id="randomize">
+            <div class="content container" style="text-align: center;max-width: 900px;">
+                <h1>You better bev yourself before you wreck yourself!</h1>
+
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div>
+                            <div id="machine1" class="randomizeMachine">
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/coffee-dripper.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/espresso-machine.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/tea-pot.png" /></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div>
+                            <div id="machine2" class="randomizeMachine">
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/coffee-filter.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/espresso-tamper.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/tea-filter.png" /></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div>
+                            <div id="machine3" class="randomizeMachine">
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/coffee-beanbag.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/espresso-grinder.png" /></div>
+                                <div><img src="//captainsometimes.com/thumbtack/img/beverages/tea-leaf.png" /></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div>
+                    <div class="btn-group btn-group-justified btn-group-randomize" role="group">
+                        <div id="goButton" type="button" class="btn btn-lg">Go!</div>
+                    </div>
+                </div>
+                <h5 class="machineResult">
+                    You are drinking:
+                    <span id="resultBeverage">nothing yet!</span>
+                </h5>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function(){
+                var machine1 = $("#machine1").slotMachine({
+                    active  : 0,
+                    delay   : 500
+                });
+
+                var machine2 = $("#machine2").slotMachine({
+                    active  : 1,
+                    delay   : 500,
+                    direction: 'down'
+                });
+
+                var machine3 = $("#machine3").slotMachine({
+                    active  : 2,
+                    delay   : 500
+                });
+
+                var resultSet = {machine1: null, machine2: null, machine3: null};
+                var beverages = ['coffee!', 'espresso!', 'tea!', 'water'];
+                var beverageIdx;
+
+                function onComplete(active){
+                    resultSet[this.element[0].id] = +this.active;
+                    beverageIdx = resultSet.machine1 === resultSet.machine2 && resultSet.machine1 === resultSet.machine3 ? this.active : 3;
+
+                    $("#resultBeverage").text(beverages[beverageIdx]);
+                }
+
+                $("#goButton").click(function(){
+
+                    machine1.shuffle(5, onComplete);
+
+                    setTimeout(function(){
+                        machine2.shuffle(5, onComplete);
+                    }, 500);
+
+                    setTimeout(function(){
+                        machine3.shuffle(5, onComplete);
+                    }, 1000);
+
+                })
+            });
+        </script>        
+    </body>
+</html>
